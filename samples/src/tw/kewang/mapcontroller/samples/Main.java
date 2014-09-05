@@ -23,9 +23,14 @@ public class Main extends ListActivity {
 		adapter.addSample("Show my location", ShowMyLocation.class);
 		adapter.addSample("Tracking my location", TrackingMyLocation.class);
 		adapter.addSample("Show specific location", ShowSpecificLocation.class);
+		adapter.addSample("Show multiple maps", ShowMultiMaps.class);
 		adapter.addSample("When map click", WhenMapClick.class);
 		adapter.addSample("Add marker", AddMarker.class);
+		adapter.addSample("Add bulk markers", AddBulkMarkers.class);
 		adapter.addSample("When info window click", WhenInfoWindowClick.class);
+		adapter.addSample("Show traffic layer", ShowTrafficLayer.class);
+		adapter.addSample("Show indoor layer", ShowIndoorLayer.class);
+		adapter.addSample("Show specific bounds", ShowSpecificBounds.class);
 
 		setListAdapter(adapter);
 	}

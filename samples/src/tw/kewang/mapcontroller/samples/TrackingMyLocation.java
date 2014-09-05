@@ -1,18 +1,18 @@
 package tw.kewang.mapcontroller.samples;
 
 import tw.kewang.mapcontroller.MapController;
-import tw.kewang.mapcontroller.MapController.MoveMyLocation;
+import tw.kewang.mapcontroller.MapController.ChangeMyLocation;
 import android.app.Activity;
 import android.location.Location;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 
 public class TrackingMyLocation extends Activity {
 	private MapView mv;
+	private MapController mc;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,20 +33,17 @@ public class TrackingMyLocation extends Activity {
 	private void setView(Bundle savedInstanceState) {
 		mv.onCreate(savedInstanceState);
 
-		try {
-			MapController.attach(this, mv.getMap());
-		} catch (GooglePlayServicesNotAvailableException e) {
-			e.printStackTrace();
-		}
+		mc = new MapController(mv.getMap());
 	}
 
 	private void setListener() {
 	}
 
 	private void doExtra() {
-		MapController.moveToMyLocation(true, new MoveMyLocation() {
+		mc.startTrackMyLocation(new ChangeMyLocation() {
 			@Override
-			public void moved(GoogleMap map, Location location) {
+			public void changed(GoogleMap map, Location location,
+					boolean lastLocation) {
 				Toast.makeText(TrackingMyLocation.this, location.toString(),
 						Toast.LENGTH_SHORT).show();
 			}
@@ -69,7 +66,7 @@ public class TrackingMyLocation extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		MapController.detach();
+		mc.stopTrackMyLocation();
 
 		mv.onDestroy();
 

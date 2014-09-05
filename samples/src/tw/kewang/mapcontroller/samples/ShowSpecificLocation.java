@@ -1,7 +1,7 @@
 package tw.kewang.mapcontroller.samples;
 
 import tw.kewang.mapcontroller.MapController;
-import tw.kewang.mapcontroller.MapController.Move;
+import tw.kewang.mapcontroller.MapController.ChangePosition;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
@@ -9,7 +9,6 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -20,6 +19,7 @@ public class ShowSpecificLocation extends Activity {
 	private LatLng latLng = new LatLng(25.03338, 121.56463);
 	private Button btnMove;
 	private Button btnAnimate;
+	private MapController mc;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,27 +42,23 @@ public class ShowSpecificLocation extends Activity {
 	private void setView(Bundle savedInstanceState) {
 		mv.onCreate(savedInstanceState);
 
-		try {
-			MapController.attach(this, mv.getMap());
-		} catch (GooglePlayServicesNotAvailableException e) {
-			e.printStackTrace();
-		}
+		mc = new MapController(mv.getMap());
 	}
 
 	private void setListener() {
 		btnMove.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				MapController.moveTo(latLng);
+				mc.moveTo(latLng);
 			}
 		});
 
 		btnAnimate.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				MapController.animateTo(latLng, new Move() {
+				mc.animateTo(latLng, new ChangePosition() {
 					@Override
-					public void moved(GoogleMap map, CameraPosition position) {
+					public void changed(GoogleMap map, CameraPosition position) {
 						Toast.makeText(ShowSpecificLocation.this,
 								position.toString(), Toast.LENGTH_SHORT).show();
 					}
@@ -72,7 +68,7 @@ public class ShowSpecificLocation extends Activity {
 	}
 
 	private void doExtra() {
-		MapController.moveToMyLocation(false);
+		mc.moveToMyLocation();
 	}
 
 	@Override
@@ -91,8 +87,6 @@ public class ShowSpecificLocation extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		MapController.detach();
-
 		mv.onDestroy();
 
 		super.onDestroy();

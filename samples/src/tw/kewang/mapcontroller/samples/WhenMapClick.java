@@ -1,18 +1,18 @@
 package tw.kewang.mapcontroller.samples;
 
 import tw.kewang.mapcontroller.MapController;
-import tw.kewang.mapcontroller.MapController.MapClick;
+import tw.kewang.mapcontroller.MapController.ClickCallback;
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.LatLng;
 
 public class WhenMapClick extends Activity {
 	private MapView mv;
+	private MapController mc;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,17 +33,13 @@ public class WhenMapClick extends Activity {
 	private void setView(Bundle savedInstanceState) {
 		mv.onCreate(savedInstanceState);
 
-		try {
-			MapController.attach(this, mv.getMap());
-		} catch (GooglePlayServicesNotAvailableException e) {
-			e.printStackTrace();
-		}
+		mc = new MapController(mv.getMap());
 	}
 
 	private void setListener() {
-		MapController.whenMapClick(new MapClick() {
+		mc.whenMapClick(new ClickCallback() {
 			@Override
-			public void mapClicked(GoogleMap map, LatLng latLng) {
+			public void clicked(GoogleMap map, LatLng latLng) {
 				Toast.makeText(WhenMapClick.this, latLng.toString(),
 						Toast.LENGTH_SHORT).show();
 			}
@@ -51,7 +47,7 @@ public class WhenMapClick extends Activity {
 	}
 
 	private void doExtra() {
-		MapController.moveToMyLocation(false);
+		mc.moveToMyLocation();
 	}
 
 	@Override
@@ -70,8 +66,6 @@ public class WhenMapClick extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		MapController.detach();
-
 		mv.onDestroy();
 
 		super.onDestroy();

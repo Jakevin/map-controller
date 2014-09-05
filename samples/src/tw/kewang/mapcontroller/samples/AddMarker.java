@@ -1,13 +1,12 @@
 package tw.kewang.mapcontroller.samples;
 
 import tw.kewang.mapcontroller.MapController;
-import tw.kewang.mapcontroller.MapController.MapClick;
-import tw.kewang.mapcontroller.MapController.MarkerAdd;
+import tw.kewang.mapcontroller.MapController.ClickCallback;
+import tw.kewang.mapcontroller.MapController.MarkerCallback;
 import android.app.Activity;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -17,6 +16,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class AddMarker extends Activity {
 	private MapView mv;
+	private MapController mc;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,17 +37,13 @@ public class AddMarker extends Activity {
 	private void setView(Bundle savedInstanceState) {
 		mv.onCreate(savedInstanceState);
 
-		try {
-			MapController.attach(this, mv.getMap());
-		} catch (GooglePlayServicesNotAvailableException e) {
-			e.printStackTrace();
-		}
+		mc = new MapController(mv.getMap());
 	}
 
 	private void setListener() {
-		MapController.whenMapClick(new MapClick() {
+		mc.whenMapClick(new ClickCallback() {
 			@Override
-			public void mapClicked(GoogleMap map, LatLng latLng) {
+			public void clicked(GoogleMap map, LatLng latLng) {
 				MarkerOptions opts = new MarkerOptions();
 
 				opts.position(latLng);
@@ -61,9 +57,9 @@ public class AddMarker extends Activity {
 	}
 
 	private void addMarker(MarkerOptions opts) {
-		MapController.add(opts, new MarkerAdd() {
+		mc.addMarker(opts, new MarkerCallback() {
 			@Override
-			public void markerAdded(GoogleMap map, Marker marker) {
+			public void invokedMarker(GoogleMap map, Marker marker) {
 				Toast.makeText(AddMarker.this, marker.getId(),
 						Toast.LENGTH_SHORT).show();
 			}
@@ -71,7 +67,7 @@ public class AddMarker extends Activity {
 	}
 
 	private void doExtra() {
-		MapController.moveToMyLocation(false);
+		mc.moveToMyLocation();
 	}
 
 	@Override
@@ -90,8 +86,6 @@ public class AddMarker extends Activity {
 
 	@Override
 	protected void onDestroy() {
-		MapController.detach();
-
 		mv.onDestroy();
 
 		super.onDestroy();
